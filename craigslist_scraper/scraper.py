@@ -7,7 +7,12 @@ class CLScrape(object):
     def __init__(self, soup):
         """ Initialize and scrape """
         self.soup = soup
-        self.title = self.parse_string('.postingtitle').strip(' -')
+        # title is not consistent to fetch
+        title_tag = soup.find(class_='postingtitle')
+        self.title = title_tag.text
+        if '-' in self.title and (title_tag.small or '$' in self.title):
+            self.title = self.title.split('-')[0].strip()
+
         self.price = self.parse_int('.price')
         self.attrs = {}
         for attrgroup in soup.select('.attrgroup'):
