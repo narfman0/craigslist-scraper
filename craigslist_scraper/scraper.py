@@ -7,13 +7,11 @@ class CLScrape(object):
     def __init__(self, soup):
         """ Initialize and scrape """
         self.soup = soup
-        # title is not consistent to fetch
-        title_tag = soup.find(class_='postingtitle')
-        self.title = title_tag.text
-        if '-' in self.title and (title_tag.small or '$' in self.title):
-            self.title = self.title.split('-')[0].strip()
-
-        self.price = self.parse_int('.price')
+        self.title = self.parse_title()
+        try:
+            self.price = self.parse_int('.price')
+        except:
+            self.price = 'Unlisted'
         self.attrs = {}
         for attrgroup in soup.select('.attrgroup'):
             for attr in attrgroup('span'):
@@ -21,6 +19,23 @@ class CLScrape(object):
                     attribute_name = self.get_text(attr).strip(' :')
                     attribute_value = attr.b.text.strip()
                     self.attrs[attribute_name] = attribute_value
+
+    def parse_title(self):
+        """ Extract title from a listing. CL does it inconsistently, thus takes
+        some extra effort """
+        try:
+            return parse_string('.postingtitletext')
+        except:
+            # looks like CL are transitioning to this selector? wasn't here
+            # yesterday
+            pass
+        #fallback mechanisms
+        title_tag = self.soup.find(class_='postingtitle')
+        title = title_tag.text
+        if '-' in title and (title_tag.small or '$' in title):
+            title = title.rsplit('-', 1)[0]
+        return title.strip()
+
 
     def parse_string(self, selector):
         """ Parse first string matching selector """
