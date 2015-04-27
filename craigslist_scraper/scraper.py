@@ -16,26 +16,27 @@ class CLScrape(object):
         for attrgroup in soup.select('.attrgroup'):
             for attr in attrgroup('span'):
                 if attr.b and attr.text != attr.b.text:
-                    attribute_name = self.get_text(attr).strip(' :')
-                    attribute_value = attr.b.text.strip()
-                    self.attrs[attribute_name] = attribute_value
+                    self.parse_attr(attr)
+        for attr in soup.select('.bigattr'):
+            self.parse_attr(attr)
+
+    def parse_attr(self, attr):
+        """ Parse a single attribute from the BeautifulSoup tag """
+        name = self.get_text(attr).strip(' :')
+        value = attr.b.text.strip()
+        self.attrs[name] = value
 
     def parse_title(self):
         """ Extract title from a listing. CL does it inconsistently, thus takes
         some extra effort """
         try:
-            return parse_string('.postingtitletext')
+            return self.parse_string('.postingtitletext').strip(' -')
         except:
             # looks like CL are transitioning to this selector? wasn't here
             # yesterday
             pass
-        #fallback mechanisms
-        title_tag = self.soup.find(class_='postingtitle')
-        title = title_tag.text
-        if '-' in title and (title_tag.small or '$' in title):
-            title = title.rsplit('-', 1)[0]
-        return title.strip()
-
+        #fallback mechanism(s)
+        return self.soup.find(class_='postingtitle').text.strip()
 
     def parse_string(self, selector):
         """ Parse first string matching selector """
