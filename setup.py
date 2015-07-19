@@ -2,9 +2,14 @@ from pip.req import parse_requirements
 from setuptools import setup, find_packages
 from craigslist_scraper import __version__ as version
 
-requirements = [
-    str(req.req) for req in parse_requirements('requirements.txt')
-]
+try:
+    requirements = [
+        str(req.req) for req in parse_requirements('requirements.txt')
+    ]
+except TypeError:
+    requirements = [
+        str(req.req) for req in parse_requirements('requirements.txt', session=False)
+    ]
 
 setup(
     name='craigslist-scraper',
