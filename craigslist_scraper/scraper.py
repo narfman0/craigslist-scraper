@@ -53,7 +53,7 @@ class CLScrape(object):
 
 def scrape_html(html):
     """ Return meta information about a video """
-    return CLScrape(BeautifulSoup(html))
+    return CLScrape(BeautifulSoup(html, "html.parser"))
 
 
 def scrape_url(url):
