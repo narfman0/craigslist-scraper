@@ -1,15 +1,6 @@
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
 from craigslist_scraper import __version__ as version
 
-try:
-    requirements = [
-        str(req.req) for req in parse_requirements('requirements.txt')
-    ]
-except TypeError:
-    requirements = [
-        str(req.req) for req in parse_requirements('requirements.txt', session=False)
-    ]
 
 setup(
     name='craigslist-scraper',
@@ -31,6 +22,9 @@ setup(
     include_package_data=True,
     py_modules=['craigslist_scraper.scraper'],
     zip_safe=True,
-    install_requires=requirements,
+    install_requires=[
+        'requests',
+        'beautifulsoup4',
+    ],
     test_suite='tests',
 )
