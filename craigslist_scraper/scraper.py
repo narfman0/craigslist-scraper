@@ -7,7 +7,7 @@ class CLScrape(object):
     def __init__(self, soup):
         """ Initialize and scrape """
         self.soup = soup
-        self.title = self.parse_title()
+        self.title = self.parse_string('#titletextonly')
         try:
             self.price = self.parse_int('.price')
         except:
@@ -25,18 +25,6 @@ class CLScrape(object):
         name = self.get_text(attr).strip(' :')
         value = attr.b.text.strip()
         self.attrs[name] = value
-
-    def parse_title(self):
-        """ Extract title from a listing. CL does it inconsistently, thus takes
-        some extra effort """
-        try:
-            return self.parse_string('.postingtitletext').strip(' -')
-        except:
-            # looks like CL are transitioning to this selector? wasn't here
-            # yesterday
-            pass
-        #fallback mechanism(s)
-        return self.soup.find(class_='postingtitle').text.strip()
 
     def parse_string(self, selector):
         """ Parse first string matching selector """
